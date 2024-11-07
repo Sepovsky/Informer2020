@@ -188,7 +188,7 @@ class Dataset_ETT_minute(Dataset):
 class Dataset_Custom(Dataset):
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTh1.csv',
-                 target='OT', scale=True, inverse=False):
+                 target='OT', scale=True, inverse=False, cols=None):
         # Initialize sequence and prediction lengths
         if size is None:
             self.seq_len = 24 * 4 * 4
@@ -205,6 +205,7 @@ class Dataset_Custom(Dataset):
         self.features = features
         self.target = target
         self.scale = scale
+        self.cols = cols  # New parameter for selecting specific columns
 
         self.root_path = root_path
         self.data_path = data_path
@@ -214,10 +215,14 @@ class Dataset_Custom(Dataset):
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path, self.data_path))
 
-        # Select columns based on the target feature
-        cols = list(df_raw.columns)
-        cols.remove(self.target)
-        df_raw = df_raw[cols + [self.target]]
+        # Apply column selection if cols is specified
+        if self.cols:
+            df_raw = df_raw[self.cols + [self.target]]
+        else:
+            # Remove the target column from the list of columns for reordering
+            cols = list(df_raw.columns)
+            cols.remove(self.target)
+            df_raw = df_raw[cols + [self.target]]
 
         # Define train/validation/test splits based on indices
         num_train = int(len(df_raw) * 0.7)
