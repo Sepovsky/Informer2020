@@ -250,15 +250,20 @@ class Dataset_Custom(Dataset):
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
 
-    def __getitem__(self, index):
+        def __getitem__(self, index):
         s_begin = index
         s_end = s_begin + self.seq_len
-        r_end = s_end + self.pred_len
+        r_begin = s_end - self.label_len 
+        r_end = r_begin + self.label_len + self.pred_len
 
         seq_x = self.data_x[s_begin:s_end]
-        seq_y = self.data_y[s_end:r_end]
+        seq_y = self.data_y[r_begin:r_end]
 
-        return seq_x, seq_y
+        # Placeholder for timestamp marks, as timestamps are not available
+        seq_x_mark = np.zeros((self.seq_len, 1))  # Dummy placeholder
+        seq_y_mark = np.zeros((self.label_len + self.pred_len, 1))  # Dummy placeholder
+
+        return seq_x, seq_y, seq_x_mark, seq_y_mark
 
     def __len__(self):
         return len(self.data_x) - self.seq_len - self.pred_len + 1
