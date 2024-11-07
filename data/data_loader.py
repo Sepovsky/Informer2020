@@ -188,7 +188,7 @@ class Dataset_ETT_minute(Dataset):
 class Dataset_Custom(Dataset):
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTh1.csv',
-                 target='OT', scale=True):
+                 target='OT', scale=True, inverse=False):
         # Initialize sequence and prediction lengths
         if size is None:
             self.seq_len = 24 * 4 * 4
